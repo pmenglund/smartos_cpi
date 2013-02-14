@@ -17,5 +17,5 @@ Gem::Specification.new do |gem|
   gem.test_files    = gem.files.grep(%r{^(test|spec|features)/})
   gem.require_paths = ["lib"]
 
-  gem.add_dependency "bosh_cpi"
+  gem.add_dependency "bosh_cpi", "~>0.5"
 end
