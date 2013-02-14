@@ -126,10 +126,12 @@ module SmartOS
     # @return [void]
     def set_vm_metadata(vm, metadata)
       not_implemented(:set_vm_metadata)
-      # zonecfg -z <uuid>
-      #   add attr; set name=...; set value=...; set type=string; end
-      #   commit
-    end
+      # add attr; set type=string; set name=foo; set value=bar; end; commit
+      # remove attr name=...
+      # info attr name=...
+      # zonecfg -z <uuid> -f <file>
+
+  end
 
     ##
     # Configures networking an existing VM.
@@ -219,6 +221,21 @@ module SmartOS
         f.write(JSON.generate(config))
       end
       file
+    end
+
+    def get_zone_attr(uuid, attr_name)
+      result = sh("zonecfg -z #{uuid} 'info attr name=#{attr_name}'")
+      match = result.output.match(/value: (\S+)$/)
+      match ? match[1] : nil
+    end
+
+    def set_zone_attr(uuid, attr_name, value)
+      cmd = "add attr; set type=string; set name=#{attr_name}; set value=#{value}; end; commit"
+      sh "zonecfg -z #{uuid} '#{cmd}'"
+    end
+
+    def has_zone_attr?(uuid, attr_name)
+      !!get_zone_attr(uuid, attr_name)
     end
 
     private
