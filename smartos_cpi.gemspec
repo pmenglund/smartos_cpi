@@ -18,4 +18,5 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
 
   gem.add_dependency "bosh_cpi", "~>0.5"
+  gem.add_dependency "uuidtools"
 end
