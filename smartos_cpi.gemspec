@@ -1,11 +1,11 @@
 # -*- encoding: utf-8 -*-
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'smartos/cloud'
+require 'smartos/version'
 
 Gem::Specification.new do |gem|
   gem.name          = "smartos_cpi"
-  gem.version       = SmartOS::Cloud::VERSION
+  gem.version       = SmartOS::VERSION
   gem.authors       = ["Martin Englund"]
   gem.email         = ["martin@englund.nu"]
   gem.description   = %q{TODO: Write a gem description}

@@ -3,6 +3,8 @@ require 'common/exec'
 require 'json'
 require 'tempfile'
 
+require 'smartos/version'
+
 module SmartOS
 
   ##
@@ -15,8 +17,6 @@ module SmartOS
   #           never attached to more than a single VM at one time
   class Cloud < Bosh::Cloud
     include Bosh::Exec
-
-    VERSION = '0.0.1'
 
     ##
     # Cloud initialization
