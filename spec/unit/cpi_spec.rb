@@ -1,6 +1,6 @@
 require "spec_helper"
 
-describe SmartOS::Cloud do
+describe SmartOS::Cloud::CPI do
   let(:options) { {} }
   let(:cpi) { described_class.new(options) }
 
@@ -70,48 +70,13 @@ describe SmartOS::Cloud do
   end
 
   describe '#set_vm_metadata' do
+    it 'should set metadata' do
+      zone = double("zone")
+      SmartOS::Cloud::Zone.should_receive(:new).with('uuid').and_return(zone)
 
-    let(:existing_result) { double('result', :output => "attr:\n	name: foo\n	type: string\n	value: bar") }
-    let(:missing_result) { double('result', :output => 'No such attr resource.') }
-
-    describe '#get_zone_attr' do
-      it 'should return the attr when it is present' do
-        cmd = 'info attr name=name'
-        cpi.should_receive(:sh).with("zonecfg -z uuid '#{cmd}'").and_return(existing_result)
-
-        cpi.get_zone_attr('uuid', 'name').should == 'bar'
-      end
-
-      it 'should return nil when the attr is absent' do
-        cmd = 'info attr name=name'
-        cpi.should_receive(:sh).with("zonecfg -z uuid '#{cmd}'").and_return(missing_result)
-
-        cpi.get_zone_attr('uuid', 'name').should be_nil
-      end
+      zone.should_receive(:set_attr).with('key1', 'value1')
+      zone.should_receive(:set_attr).with('key2', 'value2')
+      cpi.set_vm_metadata('uuid', {'key1' => 'value1', 'key2' => 'value2'})
     end
-
-    describe '#set_zone_attr' do
-      it 'should set an attr' do
-        cmd = 'add attr; set type=string; set name=name; set value=value; end; commit'
-        cpi.should_receive(:sh).with("zonecfg -z uuid '#{cmd}'")
-
-        cpi.set_zone_attr('uuid', 'name', 'value')
-      end
-    end
-
-    describe '#has_zone_attr?' do
-      it 'should return true when the attr is present' do
-        cpi.should_receive(:get_zone_attr).with('uuid', 'attr_name').and_return('foo')
-
-        cpi.has_zone_attr?('uuid', 'attr_name').should be_true
-      end
-
-      it 'should return false when the attr is absent' do
-        cpi.should_receive(:get_zone_attr).with('uuid', 'attr_name').and_return(nil)
-
-        cpi.has_zone_attr?('uuid', 'attr_name').should be_false
-      end
-    end
-
   end
 end
