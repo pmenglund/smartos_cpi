@@ -17,7 +17,7 @@ module SmartOS::Cloud
     def initialize(options)
       # persistent disk base path
       @persistent_disks = options["persistent_disks"] || 'zones/persistent'
-      create_zfs_filesystems
+      Zfs.create_dataset(@persistent_disks)
     end
 
     ##
@@ -146,8 +146,7 @@ module SmartOS::Cloud
     #                           be attached to
     # @return [String] opaque id later used by {#attach_disk}, {#detach_disk}, and {#delete_disk}
     def create_disk(size, vm_locality = nil)
-      not_implemented(:create_disk)
-      # zfs create
+      Zfs.new(@persistent_disks).create(size)
     end
 
     ##
@@ -157,8 +156,7 @@ module SmartOS::Cloud
     # @param [String] disk disk id that was once returned by {#create_disk}
     # @return [void]
     def delete_disk(disk_id)
-      not_implemented(:delete_disk)
-      # zfs delete
+      Zfs.new(@persistent_disks).destroy(disk_id)
     end
 
     ##
@@ -168,8 +166,7 @@ module SmartOS::Cloud
     # @param [String] disk disk id that was once returned by {#create_disk}
     # @return [void]
     def attach_disk(vm_id, disk_id)
-      not_implemented(:attach_disk)
-      # zfs set mountpoint=/zones/<uuid>/root/var/vcap/data zones/ephemeral/<uuid>
+      Zfs.new(@persistent_disks).mount(vm_id, disk_id)
     end
 
     ##
@@ -179,9 +176,7 @@ module SmartOS::Cloud
     # @param [String] disk disk id that was once returned by {#create_disk}
     # @return [void]
     def detach_disk(vm_id, disk_id)
-      not_implemented(:detach_disk)
-      # zfs unmount ?
-      # zfs set mountpoint=/zones/<uuid>/root/var/vcap/data zones/ephemeral/<uuid>
+      Zfs.new(@persistent_disks).unmount(vm_id, disk_id)
     end
 
     ##
@@ -213,10 +208,6 @@ module SmartOS::Cloud
         f.write(JSON.generate(config))
       end
       file
-    end
-
-    def create_zfs_filesystems
-
     end
 
     private

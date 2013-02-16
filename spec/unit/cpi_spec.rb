@@ -2,7 +2,10 @@ require "spec_helper"
 
 describe SmartOS::Cloud::CPI do
   let(:options) { {} }
-  let(:cpi) { described_class.new(options) }
+  let(:cpi) do
+    SmartOS::Cloud::Zfs.should_receive(:create_dataset)
+    described_class.new(options)
+  end
 
   describe '#create_stemcell' do
     let(:image_path) { '/doesnt/matter' }

@@ -35,5 +35,11 @@ module SmartOS::Cloud
     def uuid
       UUIDTools::UUID.random_create
     end
+
+    def self.create_dataset(dataset)
+      result = sh "zfs list #{dataset}", :on_error => :return
+      sh "zfs create #{dataset}" unless result.success?
+    end
+
   end
 end

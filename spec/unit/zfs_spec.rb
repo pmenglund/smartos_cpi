@@ -54,4 +54,28 @@ describe SmartOS::Cloud::Zfs do
       zfs.mount(zone_id, disk_id)
     end
   end
+
+  describe '.create_dataset' do
+    it 'should create the dataset if it is absent' do
+      path = 'zones/persistent'
+
+      result = double('result', :success? => false)
+      described_class.should_receive(:sh).with("zfs list #{path}", :on_error => :return).and_return(result)
+      described_class.should_receive(:sh).with("zfs create #{path}")
+
+      described_class.create_dataset(path)
+    end
+
+    it 'should not create the dataset if it is present' do
+      path = 'zones/persistent'
+
+      result = double('result', :success? => true)
+
+      described_class.should_receive(:sh).with("zfs list #{path}", :on_error => :return).and_return(result)
+      described_class.should_not_receive(:sh).with("zfs create #{path}")
+
+      described_class.create_dataset(path)
+
+    end
+  end
 end
